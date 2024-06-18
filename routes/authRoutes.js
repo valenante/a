@@ -27,7 +27,7 @@ router.post('/google-login', async (req, res) => {
     }
 
     // Generar un token JWT
-    const token = jwt.sign({ id: user._id, email: user.email, authProvider: 'google'}, 'Valenante12!', {
+    const token = jwt.sign({ id: user._id, email: user.email, authProvider: 'google'}, process.env.JWT_SECRET, {
       expiresIn: '1h', // Tiempo de expiración del token (ejemplo: 1 hora)
     });
 
@@ -71,7 +71,7 @@ router.post('/login',
         return res.status(400).json({ message: 'Correo o contraseña incorrectos.' });
       }
 
-      const token = jwt.sign({ id: user.id, email: user.email }, 'Valenante12!', { expiresIn: '1h' });
+      const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
       res.json({ message: 'Login exitoso', token });
     } catch (error) {
       console.error('Error en el servidor:', error);

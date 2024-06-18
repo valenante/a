@@ -79,21 +79,21 @@ router.post('/change-password', async (req, res) => {
 // Ruta para cambiar el correo electrónico
 router.put('/change-email', [
   body('email').notEmpty().withMessage('El correo electrónico actual es requerido')
-              .isEmail().withMessage('El correo electrónico actual no es válido')
-              .custom(value => {
-                if (!/@/.test(value)) {
-                  throw new Error('El correo electrónico actual debe contener el símbolo "@"');
-                }
-                return true;
-              }),
+    .isEmail().withMessage('El correo electrónico actual no es válido')
+    .custom(value => {
+      if (!/@/.test(value)) {
+        throw new Error('El correo electrónico actual debe contener el símbolo "@"');
+      }
+      return true;
+    }),
   body('newEmail').notEmpty().withMessage('El nuevo correo electrónico es requerido')
-                 .isEmail().withMessage('El nuevo correo electrónico no es válido')
-                 .custom(value => {
-                   if (!/@/.test(value)) {
-                     throw new Error('El nuevo correo electrónico debe contener el símbolo "@"');
-                   }
-                   return true;
-                 }),
+    .isEmail().withMessage('El nuevo correo electrónico no es válido')
+    .custom(value => {
+      if (!/@/.test(value)) {
+        throw new Error('El nuevo correo electrónico debe contener el símbolo "@"');
+      }
+      return true;
+    }),
 ], async (req, res) => {
   const { userId, newEmail } = req.body;
 

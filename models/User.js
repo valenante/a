@@ -6,6 +6,9 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date },
+  resetPasswordRequests: [{ type: Date }]  // Array para almacenar las fechas de las solicitudes
 });
 
 // Antes de guardar el usuario en la base de datos, hashear la contraseña
