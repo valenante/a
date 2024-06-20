@@ -5,6 +5,7 @@ const passport = require('passport');
 const session = require('express-session');
 const { OAuth2Client } = require('google-auth-library');
 const firebaseAdmin = require('firebase-admin');
+const path = require('path');
 
 // Rutas y configuración de base de datos
 const userRoutes = require('./routes/userRoutes');
@@ -29,12 +30,23 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const client_id = process.env.GOOGLE_CLIENT_ID;
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-const redirectUri = 'http://localhost:3000';
+const redirectUri = 'http://localhost:3000'; // Ajusta esto según tu configuración en producción
 const oauth2Client = new OAuth2Client(client_id, clientSecret, redirectUri);
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000', // Asegúrate de permitir el origen correcto
+  credentials: true
+}));
 app.use(express.json());
+
+// Redirección HTTP a HTTPS
+app.use((req, res, next) => {
+  if (req.secure) {
+    return next();
+  }
+  res.redirect('https://' + req.headers.host + req.url);
+});
 
 // Configuración de sesión
 app.use(session({
@@ -52,6 +64,13 @@ app.use('/api/auth', authRouter);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/email', emailRoutes);
+
+// Sirve los archivos estáticos del frontend de React
+app.use(express.static(path.join(__dirname, '..', 'godmodefront', 'build')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '..', 'godmodefront', 'build', 'index.html'));
+});
 
 // Middleware para manejar rutas no encontradas (404)
 app.use((req, res, next) => {
