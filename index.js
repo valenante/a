@@ -40,17 +40,17 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Redirección HTTP a HTTPS
+// Redirección HTTP a HTTPS (ajusta según tu configuración)
 app.use((req, res, next) => {
-  if (req.secure) {
-    return next();
+  if (req.headers['x-forwarded-proto'] !== 'https' && process.env.NODE_ENV === 'production') {
+    return res.redirect('https://' + req.headers.host + req.url);
   }
-  res.redirect('https://' + req.headers.host + req.url);
+  next();
 });
 
 // Configuración de sesión
 app.use(session({
-  secret: 'dsfohj',
+  secret: process.env.SESSION_SECRET, 
   resave: false,
   saveUninitialized: true
 }));
@@ -68,6 +68,7 @@ app.use('/api/email', emailRoutes);
 // Sirve los archivos estáticos del frontend de React
 app.use(express.static(path.join(__dirname, '..', 'godmodefront', 'build')));
 
+// Ruta para cualquier otra petición que no sea manejada por el backend
 app.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, '..', 'godmodefront', 'build', 'index.html'));
 });
